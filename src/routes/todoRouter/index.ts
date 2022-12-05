@@ -1,18 +1,20 @@
 import { Router } from 'express';
 
-import getTodos from './getTodoList.controller';
-import addTodo from './postTodoList.controller';
-import updateTodo from './updateTodoList.controller';
-import deleteTodo from './deleteTodoList.controller';
+import {
+    getTodoListController,
+    postTodoListController,
+    updateTodoListController,
+    deleteTodoListController,
+} from './controller';
 
 const router = Router();
 
-router.get('/todos', getTodos);
+router.get('/todos', getTodoListController);
 
-router.post('/add-todo', addTodo);
+router.post('/add-todo', postTodoListController);
 
-router.put('/edit-todo/:id', updateTodo);
+router.put('/edit-todo/:id', updateTodoListController);
 
-router.delete('/delete-todo/:id', deleteTodo);
+router.delete('/delete-todo/:id', deleteTodoListController);
 
 export default router;
