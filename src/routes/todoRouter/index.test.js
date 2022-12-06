@@ -1,104 +1,66 @@
 import MockModel from "jest-mongoose-mock";
-import postTodoController from './postTodoList.controller';
-import updateTodoListController from './updateTodoList.controller';
-import deleteTodoController from './deleteTodoList.controller';
-import sinon from 'sinon';
+
+import { postTodoListController, updateTodoListController, deleteTodoListController } from "./controller";
 
 jest.mock("../../db/models/todo", () => new MockModel());
 
-describe("fetchTodo", () => {
-  let mockData;
-  beforeEach(() => {
-    mockData = {
-      name: "Name",
-      description: "b2oiufnok",
-      status: false,
-    }
-  });
-  const mockRequest = () => {
-    return {
-      name: "Name", description: "b2oiufnok", status: false,
-    };
-  };
-  
-  const mockResponse = () => {
-    const res = {};
-    res.status = sinon.stub().returns(res);
-    res.json = sinon.stub().returns(res);
-    res.send = jest.fn();
-    return res;
-  };
+const mockRequest = () => {
+  const req = {};
+  req.body = jest.fn().mockReturnValue(req);
+  req.params = jest.fn().mockReturnValue(req);
+  return req;
+};
 
-  it("should create a todo item successfully", () => {
+const mockResponse = () => {
+  const res = {};
+  res.send = jest.fn().mockReturnValue(res);
+  res.status = jest.fn().mockReturnValue(res);
+  res.json = jest.fn();
+  return res;
+};
+
+describe("Testing controllers", () => {
+  it("should create a todo item successfully", async () => {
     const req = mockRequest();
     const res = mockResponse();
-    postTodoController(req, res);
-    expect(mockData).toEqual(req);
-  });
 
-  let mockDataUpdate;
-  beforeEach(() => {
-    jest.clearAllMocks();
-    mockDataUpdate = {
-      name: "Name",
-      description: "b2oiufnok",
-      status: true,
-    }
-  });
-
-  const mockUpdateRequest = () => {
-    return {
-      name: "Name", description: "b2oiufnok", status: true,
-    };
-  };
-
-  const mockUpdateResponse = () => {
-    const res = {};
-    res.status = sinon.stub().returns(res);
-    res.json = sinon.stub().returns(res);
-    res.send = jest.fn();
-    return res;
-  };
-
-  it("should updated field status", () => {
-    const req = mockUpdateRequest();
-    const res = mockUpdateResponse();
-    updateTodoListController(req, res);
-    expect(mockDataUpdate).toEqual(req);
-  });
-
-  let mockDataDelete;
-  beforeEach(() => {
-    jest.clearAllMocks();
-    mockDataDelete = {
-      _id: "123",
-      name: "Name",
-      description: "b2oiufnok",
-      status: false,
-    }
-  });
-
-  const mockDeleteRequest = () => {
-    return {
-      _id: "123",
-      name: "Name",
-      description: "b2oiufnok",
+    req.body = {
+      name: "Name todo",
+      description: "Description todo",
       status: false,
     };
-  };
 
-  const mockDeleteResponse = () => {
-    const res = {};
-    res.status = sinon.stub().returns(res);
-    res.json = sinon.stub().returns(res);
-    res.send = jest.fn();
-    return res;
-  };
+    await postTodoListController(req, res);
 
-  it("should delete todo item", () => {
-    const req = mockDeleteRequest();
-    const res = mockDeleteResponse();
-    deleteTodoController(req, res);
-    expect(mockDataDelete).toEqual(req);
+    expect(res.send).toHaveBeenCalledTimes(1)
+    expect(res.send.mock.calls.length).toBe(1);
+    expect(res.status).toHaveBeenCalledWith(200);
+  });
+
+  it("should update status field of todo item successfully", async () => {
+    const req = mockRequest();
+    const res = mockResponse();
+
+    req.params.id = '1';
+    req.body = { status: true };
+
+    await updateTodoListController(req, res);
+
+    expect(res.send).toHaveBeenCalledTimes(1)
+    expect(res.send.mock.calls.length).toBe(1);
+    expect(res.status).toHaveBeenCalledWith(200);
+  });
+
+  it("should delete a todo item successfully", async () => {
+    const req = mockRequest();
+    const res = mockResponse();
+
+    req.params.id = '1';
+
+    await deleteTodoListController(req, res);
+
+    expect(res.send).toHaveBeenCalledTimes(1)
+    expect(res.send.mock.calls.length).toBe(1);
+    expect(res.status).toHaveBeenCalledWith(200);
   });
 });

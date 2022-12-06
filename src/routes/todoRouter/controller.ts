@@ -51,7 +51,6 @@ export  async function getTodoListController( req, res) {
       data: todos,
     });
   } catch (error) {
-    console.log('error', error)
     return response({
       error,
       reply: res,
@@ -67,13 +66,12 @@ export async function postTodoListController(req, res) {
 
     const { name, description, status }:Todo = body;
 
-    const todo: ITodo = new Todo({
+    const newTodo = await Todo.create({
       name,
       description,
       status,
     });
 
-    const newTodo: ITodo = await todo.save();
     const allTodos: ITodo[] = await Todo.find();
 
     return response({
