@@ -1,8 +1,19 @@
-import MockModel from "jest-mongoose-mock";
-
 import { postTodoListController, updateTodoListController, deleteTodoListController } from "./controller";
 
-jest.mock("../../db/models/todo", () => new MockModel());
+jest.mock("../../db/models/todo", () => {
+  const mockCreate = jest
+    .fn()
+    .mockResolvedValue({ name: "Test", description: "Description", status: false });
+  const mockFind = jest.fn()
+  const mockFindByIdAndUpdate = jest.fn().mockResolvedValue({ id: 1, name: "Test", description: "Description", status: true });
+  const mockFindByIdAndRemove = jest.fn().mockResolvedValue({ id: 1, name: "Test", description: "Description", status: false });
+  return {
+    create: mockCreate,
+    find: mockFind,
+    findByIdAndUpdate: mockFindByIdAndUpdate,
+    findByIdAndRemove: mockFindByIdAndRemove,
+  };
+});
 
 const mockRequest = () => {
   const req = {};
@@ -35,6 +46,10 @@ describe("Testing controllers", () => {
     expect(res.send).toHaveBeenCalledTimes(1)
     expect(res.send.mock.calls.length).toBe(1);
     expect(res.status).toHaveBeenCalledWith(200);
+
+    expect(res.send.mock.lastCall[0].todo.name).toBe('Test');
+    expect(res.send.mock.lastCall[0].todo.description).toBe('Description');
+    expect(res.send.mock.lastCall[0].todo.status).toBe(false);
   });
 
   it("should update status field of todo item successfully", async () => {
@@ -49,6 +64,8 @@ describe("Testing controllers", () => {
     expect(res.send).toHaveBeenCalledTimes(1)
     expect(res.send.mock.calls.length).toBe(1);
     expect(res.status).toHaveBeenCalledWith(200);
+
+    expect(res.send.mock.lastCall[0].todo.status).toBe(true);
   });
 
   it("should delete a todo item successfully", async () => {
@@ -62,5 +79,6 @@ describe("Testing controllers", () => {
     expect(res.send).toHaveBeenCalledTimes(1)
     expect(res.send.mock.calls.length).toBe(1);
     expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.send.mock.lastCall[0].todo.id).toBe(1);
   });
 });

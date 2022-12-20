@@ -107,6 +107,7 @@ export async function updateTodoListController(req, res) {
     return response({
       reply: res,
       status: ResponseStatuses.OK,
+      todo: updateTodo,
       data: allTodos,
     });
   } catch (error) {
