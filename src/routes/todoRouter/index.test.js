@@ -4,7 +4,7 @@ jest.mock("../../db/models/todo", () => {
   const mockCreate = jest
     .fn()
     .mockResolvedValue({ name: "Test", description: "Description", status: false });
-  const mockFind = jest.fn()
+  const mockFind = jest.fn().mockResolvedValue({ id: 1, name: "Test", description: "Description", status: false });
   const mockFindByIdAndUpdate = jest.fn().mockResolvedValue({ id: 1, name: "Test", description: "Description", status: true });
   const mockFindByIdAndRemove = jest.fn().mockResolvedValue({ id: 1, name: "Test", description: "Description", status: false });
   return {
@@ -47,6 +47,7 @@ describe("Testing controllers", () => {
     expect(res.send.mock.calls.length).toBe(1);
     expect(res.status).toHaveBeenCalledWith(200);
 
+    expect(res.send.mock.lastCall[0].data.id).toBe(1);
     expect(res.send.mock.lastCall[0].todo.name).toBe('Test');
     expect(res.send.mock.lastCall[0].todo.description).toBe('Description');
     expect(res.send.mock.lastCall[0].todo.status).toBe(false);
